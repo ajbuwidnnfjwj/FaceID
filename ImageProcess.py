@@ -11,6 +11,7 @@ def detectFace(image) -> tuple:
     
 def getFacePart(image) -> np.array:
     # returns only face in image
+    assert image is not None, 'cannot load image'
     gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     faces = FACE_CASCADE.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
     x,y,w,h = faces[0]
@@ -31,13 +32,13 @@ def keyPoints(image,
     )) -> tuple:
     face = getFacePart(image)
     gray = cv.cvtColor(face, cv.COLOR_BGR2GRAY)
-    return method.detect(gray, None)
+    return method.detectAndCompute(gray, None)
 
 if __name__ == '__main__':
-    image = cv.imread('./bang.jpg')
+    image = cv.imread('./isa.jpg')
     # resize = cv.resize(image, dsize = (0, 0), fx=0.5, fy=0.5, interpolation=cv.INTER_LINEAR)
     image = getFacePart(image)
-    image_with_key_points = cv.drawKeypoints(image, keyPoints(image), None)
+    image_with_key_points = cv.drawKeypoints(image, keyPoints(image)[0], None)
     cv.imshow('Image with Keypoints', image_with_key_points)
     cv.waitKey(0)
     cv.destroyAllWindows()
