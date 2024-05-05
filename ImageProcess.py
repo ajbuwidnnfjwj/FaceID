@@ -30,14 +30,14 @@ def keyPoints(image,
         patchSize=31,
         fastThreshold=20,
     )) -> tuple:
-    face = getFacePart(image)
-    gray = cv.cvtColor(face, cv.COLOR_BGR2GRAY)
+    gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     return method.detectAndCompute(gray, None)
 
 if __name__ == '__main__':
-    image = cv.imread('./isa.jpg')
-    # resize = cv.resize(image, dsize = (0, 0), fx=0.5, fy=0.5, interpolation=cv.INTER_LINEAR)
-    image = getFacePart(image)
+    image = cv.imread('./FaceID/images/isa_1.jpg')
+    
+    resize = cv.resize(image, dsize = (0, 0), fx=0.4, fy=0.4, interpolation=cv.INTER_LINEAR)
+    image = getFacePart(resize)
     image_with_key_points = cv.drawKeypoints(image, keyPoints(image)[0], None)
     cv.imshow('Image with Keypoints', image_with_key_points)
     cv.waitKey(0)
