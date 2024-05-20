@@ -4,6 +4,7 @@ import ImageProcess
 
 isa_1 = ImageProcess.getFacePart(cv.imread("./FaceID/images/isa_1.jpg"))
 isa = ImageProcess.getFacePart(cv.imread("./FaceID/images/isa_2.jpg"))
+print(np.array(isa))
 
 keypoints_s, descriptors_s = ImageProcess.keyPoints(isa_1)
 keypoints_i, descriptors_i = ImageProcess.keyPoints(isa)
