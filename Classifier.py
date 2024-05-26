@@ -44,8 +44,7 @@ for epoch in range(num_epochs):
     running_loss = 0.0
     for i, data in enumerate(trainset, 0):
         # 입력 데이터와 레이블을 GPU로 이동
-        inputs, labels = data[0].to(device), torch.FloatTensor(data[1]).to(device)
-        print(inputs.shape)
+        inputs, labels = data[0].transpose().to(device), torch.FloatTensor(data[1]).to(device)
         # 파라미터 그라디언트 초기화
         optimizer.zero_grad()
 
