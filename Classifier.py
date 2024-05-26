@@ -9,12 +9,10 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # 이미지 전처리 및 데이터셋 생성
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
-    transforms.RandomHorizontalFlip(),
-    transforms.RandomRotation(10),
     transforms.ToTensor(),
     transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))])
 trainset = torchvision.datasets.ImageFolder(root='./FaceID/images', transform=transform)
-dataloader = DataLoader(trainset, batch_size=32, shuffle=True)
+trainloader = DataLoader(trainset, batch_size=32, shuffle=True)
 
 # 사전 훈련된 VGG 모델 불러오기
 vgg_model = models.vgg16(weights=models.VGG16_Weights.DEFAULT)
@@ -39,25 +37,27 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(vgg_model.parameters(), lr=0.001)
 
 # 모델 학습
-num_epochs = 10
+num_epochs = 100
 for epoch in range(num_epochs):
+    print(epoch, end = ' ')
     running_loss = 0.0
-    for i, data in enumerate(trainset, 0):
-        # 입력 데이터와 레이블을 GPU로 이동
-        inputs, labels = data[0].transpose().to(device), torch.FloatTensor(data[1]).to(device)
-        # 파라미터 그라디언트 초기화
+    for i, data in enumerate(trainloader, 0):
+        print(i)
+        # get the inputs
+        inputs, labels = data
+        inputs, labels = inputs.to(device), labels.to(device)
+        # zero the parameter gradients
         optimizer.zero_grad()
-
-        # 순전파 + 역전파 + 최적화
         outputs = vgg_model(inputs)
         loss = criterion(outputs, labels)
+
         loss.backward()
         optimizer.step()
 
-        # 통계 출력
         running_loss += loss.item()
-        if i % 2000 == 1999:  # 매 2000 미니배치마다
-            print(f'[{epoch + 1}, {i + 1}] loss: {running_loss / 2000:.3f}')
+        if i % 50 == 49:    # print every 2000 mini-batches
+            print('[%d, %5d] loss: %.3f' %
+                  (epoch + 1, i + 1, running_loss / 50))
             running_loss = 0.0
 
 # # 학습된 모델 저장
