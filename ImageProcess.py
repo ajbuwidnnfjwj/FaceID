@@ -30,3 +30,11 @@ if __name__ == '__main__':
         else:
             image = getFacePart(image)
             cv.imwrite(image_name, image)
+
+
+if __name__ == '__main__':
+    command = input()
+    if command == '--compile':
+        pass
+    else:
+        pass
