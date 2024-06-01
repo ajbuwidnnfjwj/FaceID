@@ -95,6 +95,10 @@ class Classifier():
         torch.save(self.face_classifier.state_dict(), "face_classification_model.pth")
         self.pre_trained = True
 
-
-classifier = Classifier()
-classifier.classifyFace('./FaceID/images/non_isa','Liz_1.jpg')
+if __name__ == '__main__':
+    command = input()
+    if command == '--compile':
+        pass
+    else:
+        classifier = Classifier()
+        classifier.classifyFace('./FaceID/images/non_isa','Liz_1.jpg')
