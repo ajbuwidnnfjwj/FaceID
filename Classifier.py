@@ -24,7 +24,6 @@ class Classifier():
             nn.Softmax(dim=1)
         )
         self.face_classifier.to(device)
-        self.pre_trained = True
         self.transform = None
         try:
             self.face_classifier.load_state_dict(torch.load('vgg16_cifar10.pth'))
@@ -57,11 +56,22 @@ class Classifier():
         else:
             print("같은 얼굴이 아닙니다.")
 
+    def classifyFace(self, image):        
+        assert image is not None, 'cannot load image'
 
-    def trainAndSaveModel(self):
-        if self.pre_trained:
-            return
-        
+        image = Image.fromarray(image)
+        image = self.transform(image).unsqueeze(0).to(device)
+
+        with torch.no_grad():
+            output = self.face_classifier(image)
+        _, predicted = torch.max(output, 1)
+        if predicted.item() == 0:
+            print("같은 얼굴입니다.")
+        else:
+            print("같은 얼굴이 아닙니다.")
+
+
+    def trainAndSaveModel(self):        
         # 이미지 전처리 및 데이터셋 생성
         trainset = torchvision.datasets.ImageFolder(root='./FaceID/images', transform=self.transform)
         trainloader = DataLoader(trainset, batch_size=32, shuffle=True)
