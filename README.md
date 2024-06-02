@@ -7,9 +7,11 @@
 
 ## Program Use
  FaceID.py를 실행시 콘솔창에 메세지가 출력됩니다.
+ 
  ![execution1] (./readme/execution1.png)
 
  1을 입력할 경우 웹캠에서 얼굴을 얻어와 같은 얼굴인지 판별을 진행합니다.
+ 
  ![execution2] (./readme/execution2.png)
 
  2를 입력할 경우 모델이 다시 학습을 진행합니다. 프로젝트 폴더의 images/0 폴더 안에 새로 학습을 진행할 얼굴 사진들을 넣어줍니다.
@@ -35,6 +37,7 @@
  Classifier.Classifier.evalueateModel()함수를 호출하면 모델의 accuracy, precision, recall값을 얻을 수 있습니다.
  
  ![cap] (./readme/validation.png)
+ 
  Accuracy 0.875이지만, images/0 폴더 안의 이미지가 1 폴더 안의 이미지보다 훨씬 많아 생기는 현상일 수 있습니다.
  더 정확한 분석을 위해 Precision과 Recall을 참고합니다. Precision의 값은 0.7656, Recall 0.8750로 Accuracy와 큰 차이를 보이지 않고 있습니다.
  
