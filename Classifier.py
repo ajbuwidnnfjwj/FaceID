@@ -23,6 +23,7 @@ class Classifier():
             nn.Linear(512, 2),
             nn.Softmax(dim=1)
         )
+        self.face_classifier.to(device)
         self.pre_trained = True
         self.transform = None
         try:
@@ -38,7 +39,7 @@ class Classifier():
 
 
     def classifyFace(self, path, file_name):
-        self.__trainAndSaveModel()
+        self.trainAndSaveModel()
         image_name = os.path.join(path, file_name)
         image = cv.imread(image_name)
         
@@ -57,7 +58,7 @@ class Classifier():
             print("같은 얼굴이 아닙니다.")
 
 
-    def __trainAndSaveModel(self):
+    def trainAndSaveModel(self):
         if self.pre_trained:
             return
         
@@ -67,6 +68,8 @@ class Classifier():
 
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.Adam(self.face_classifier.parameters(), lr=0.001)
+
+        self.face_classifier.to(device)
 
         # 모델 학습
         num_epochs = 100
@@ -95,10 +98,39 @@ class Classifier():
         torch.save(self.face_classifier.state_dict(), "face_classification_model.pth")
         self.pre_trained = True
 
+
+    def evaluateModel(self):
+        from sklearn.metrics import accuracy_score, precision_score, recall_score
+        self.face_classifier.eval()  # 평가 모드 설정
+        all_preds = []
+        all_labels = []
+
+        dataset = torchvision.datasets.ImageFolder(root='./FaceID/images', transform=self.transform)
+        data_loader = DataLoader(dataset, batch_size=32, shuffle=True)
+
+        with torch.no_grad():
+            for images, labels in data_loader:
+                images, labels = images.to(device), labels.to(device)
+                outputs = self.face_classifier(images)
+                _, preds = torch.max(outputs, 1)
+                all_preds.extend(preds.cpu().numpy())
+                all_labels.extend(labels.cpu().numpy())
+
+        accuracy = accuracy_score(all_labels, all_preds)
+        precision = precision_score(all_labels, all_preds, average='weighted')
+        recall = recall_score(all_labels, all_preds, average='weighted')
+
+        print(f"Accuracy: {accuracy:.4f}")
+        print(f"Precision: {precision:.4f}")
+        print(f"Recall: {recall:.4f}")
+
 if __name__ == '__main__':
     command = input()
-    if command == '--compile':
+    if command == 'compile':
         pass
+    elif command == 'test':
+        classifier = Classifier()
+        classifier.evaluateModel()
     else:
         classifier = Classifier()
-        classifier.classifyFace('./FaceID/images/non_isa','Liz_1.jpg')
+        classifier.classifyFace('./FaceID/images/1','Liz_1.jpg')
